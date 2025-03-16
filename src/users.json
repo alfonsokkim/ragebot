@@ -1,0 +1,62 @@
+[
+  {
+    "id": "1742098751654",
+    "email": "hi@gmail.com",
+    "passwordHash": "$2b$10$91TeISQy81hgO3U1WbRSzuqcVkx0kYKcNNbO7XTtRMUA.Gcl9ZLJC",
+    "chatHistory": [
+      {
+        "timestamp": 1742098765181,
+        "averageScore": 85,
+        "messages": [
+          {
+            "text": "i did leetcode today and thee gym",
+            "side": "right"
+          },
+          {
+            "text": "That's great to hear that you tackled both coding and fitness today! Keep up the momentum and continue pushing yourself to improve in both areas. Consistency is key to progress, so make sure to keep up with your routine! Remember, a little progress each day adds up to big results.",
+            "side": "left"
+          }
+        ],
+        "summary": "The individual mentioned doing Leetcode and going to the gym in a single day. It's commendable to focus on both mental and physical well-being. Consistency in these activities can lead to significant progress over time."
+      },
+      {
+        "timestamp": 1742098769581,
+        "averageScore": 77.5,
+        "messages": [
+          {
+            "text": "i did leetcode today and thee gym",
+            "side": "right"
+          },
+          {
+            "text": "That's great to hear that you tackled both coding and fitness today! Keep up the momentum and continue pushing yourself to improve in both areas. Consistency is key to progress, so make sure to keep up with your routine! Remember, a little progress each day adds up to big results.",
+            "side": "left"
+          },
+          {
+            "text": "what if the gym is bad",
+            "side": "right"
+          },
+          {
+            "text": "If you feel like the gym you're currently attending isn't meeting your expectations, it might be worth exploring other options or trying different workouts to keep yourself motivated and engaged. Your health and fitness are important, so finding a gym that suits your needs and preferences can make a big difference in your progress. Don't be afraid to switch things up and find what works best for you to stay consistent and motivated!",
+            "side": "left"
+          }
+        ],
+        "summary": "Final Statement: It's essential to find a gym that aligns with your fitness goals and keeps you motivated to maintain a consistent workout routine."
+      },
+      {
+        "timestamp": 1742099487644,
+        "averageScore": 50,
+        "messages": [
+          {
+            "text": "hre",
+            "side": "right"
+          },
+          {
+            "text": "It seems like you may have just accidentally typed \"hre.\" Remember to focus and be intentional with your communication. Let's strive for more purposeful interactions. Keep pushing yourself to be clear and concise in your messages!",
+            "side": "left"
+          }
+        ],
+        "summary": "There is not enough context to provide a summary of the conversation."
+      }
+    ]
+  }
+]
