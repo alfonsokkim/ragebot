@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./ChatComponents.css";
 
-// Header now lets the user select a difficulty.
+// Header to let the user change the difficulty
 export const Header: React.FC<{
   setDifficulty: (diff: string) => void;
   currentDifficulty: string;
@@ -118,7 +118,7 @@ const ChatUI: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [difficulty, setDifficulty] = useState("medium");
 
-  // Sends the user's message to the Express server and updates messages with the bot's reply.
+  // send user's message to express server, then update message with the reply
   const handleSendMessage = async (userMessage: string) => {
     // Add user message to chat
     setMessages((prev) => [...prev, { text: userMessage, side: "right" }]);

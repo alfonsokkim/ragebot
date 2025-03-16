@@ -5,19 +5,19 @@ import express from "express";
 import cors from "cors";
 import { OpenAI } from "openai";
 
-// 1) Validate your OPENAI_API_KEY
+// 1) validate the OPENAI_API_KEY
 if (!process.env.OPENAI_API_KEY) {
   console.error("Error: OPENAI_API_KEY is missing");
   process.exit(1);
 }
 
-// 2) Initialize OpenAI and Express
+// 2) initialize OpenAI and Express
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 3) Global conversation state
+// 3) global conversation state
 let convoHistory = [
   {
     role: "system",
@@ -27,12 +27,14 @@ let convoHistory = [
 ];
 
 // 4) Difficulty, total score, query count
+// Currently using difficulty default as medium, could be set to easy though.
 let chosenDifficulty = "medium";
 let totalScore = 0;
 let queryCount = 0;
 
 /**
  * Helper function to determine roast prompt based on difficulty
+ * Basically, the dynamic difficulty based on input.
  */
 function getRoastPrompt(difficulty) {
   if (difficulty === "easy") {
@@ -51,20 +53,17 @@ app.post("/api/ragebot", async (req, res) => {
   try {
     const { userMessage, difficulty } = req.body;
 
-    // Validate or default difficulty
+    // validate the difficulty.
     if (!["easy", "medium", "hard"].includes(difficulty)) {
       chosenDifficulty = "medium";
     } else {
       chosenDifficulty = difficulty;
     }
 
-    // Add user's message to conversation
     convoHistory.push({ role: "user", content: userMessage });
 
-    // Build dynamic system prompt
     const roastPrompt = getRoastPrompt(chosenDifficulty);
 
-    // Call OpenAI Chat Completion
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
@@ -84,10 +83,13 @@ app.post("/api/ragebot", async (req, res) => {
       return res.status(500).json({ error: "No response from OpenAI." });
     }
 
-    // Add AI’s full reply to the conversation
+    // Push the reply to the convoHistory.
+    // Should be using this later for the user convo history.
     convoHistory.push({ role: "assistant", content: reply });
 
-    // Extract the "Score: NN" portion
+    // Extract the "Score: NN" portion from the terminal
+    // This probably can be done easier, but since we had
+    // to switch from terminal output to requests, this is what we have.
     const scoreMatch = reply.match(/Score:\s*(\d+)/);
     if (scoreMatch) {
       const currentScore = parseInt(scoreMatch[1]);
@@ -95,16 +97,16 @@ app.post("/api/ragebot", async (req, res) => {
       queryCount++;
     }
 
-    // Remove the score line from the displayed text
+    // remove the score line from the displayed text
+    // Again, since we did terminal output first, need to trim the text.
     const cleanReply = reply.replace(/Score:\s*\d+\s*$/, "").trim();
 
-    // Calculate average so far
     let averageScore = 0;
     if (queryCount > 0) {
       averageScore = totalScore / queryCount;
     }
 
-    // Return both the cleaned-up reply and the average
+    // returned repsonse
     res.json({
       botReply: cleanReply,
       averageScore: averageScore.toFixed(2), // e.g. "70.00"
