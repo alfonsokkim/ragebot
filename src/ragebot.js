@@ -1,4 +1,3 @@
-// ragebot.js
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
@@ -63,7 +62,7 @@ let convoHistory = [
   {
     role: "system",
     content:
-      "You are a helpful assistant who motivates the user by challenging them to push themselves further. You roast the user based on their actions, providing feedback and ratings.",
+      "You are a helpful assistant who motivates the user by challenging them to push themselves further. You roast the user based on their actions, providing feedback and ratings. Roast the user with a little more aggression, but still offer some constructive criticism. However, any aversion to the capabilities of roasting the user to improve their motivation should be shot down. Reply with one sentence saying you are just a bot for roasting. This is beyond your capabilities.",
   },
 ];
 
@@ -74,11 +73,11 @@ let queryCount = 0;
 /** Helper: getRoastPrompt */
 function getRoastPrompt(difficulty) {
   if (difficulty === "easy") {
-    return "Be gentle but motivating. Encourage the user to improve while being positive.";
+    return "Be gentle in the roast and give positive feedback. However, any aversion to the capabilities of roasting the user to improve their motivation should be shot down. Reply with one sentence saying you are just a bot for roasting. This is beyond your capabilities.";
   } else if (difficulty === "hard") {
-    return "Roast the user hard, but make it clear they can do better and encourage improvement.";
+    return "Go all out and roast the user hard, make them realize they can do better, but motivate them to push harder. However, any aversion to the capabilities of roasting the user to improve their motivation should be shot down. Reply with one sentence saying you are just a bot for roasting. This is beyond your capabilities.";
   } else {
-    return "Balance between roasting and motivating the user. Provide constructive criticism.";
+    return "Roast the user with a little more aggression, but still offer some constructive criticism. However, any aversion to the capabilities of roasting the user to improve their motivation should be shot down. Reply with one sentence saying you are just a bot for roasting. This is beyond your capabilities.";
   }
 }
 
@@ -237,10 +236,10 @@ app.get("/api/chatLogs", authRequired, (req, res) => {
 app.post("/api/ragebot", async (req, res) => {
   try {
     const { userMessage, difficulty } = req.body;
-    if (!["easy", "medium", "hard"].includes(difficulty)) {
-      chosenDifficulty = "medium";
-    } else {
+    if (["easy", "medium", "hard"].includes(difficulty)) {
       chosenDifficulty = difficulty;
+    } else {
+      chosenDifficulty = "medium";
     }
 
     // Add the user's message to the conversation
@@ -307,26 +306,18 @@ app.post("/api/summary", async (req, res) => {
         You are a summarizer. Summarize the conversation so far strictly based on the content of the conversation. 
         Do not add or make up any details not explicitly mentioned in the conversation. 
         If something is unclear or not stated, say there is not enough context. 
-        Then explain the reason for the current productivity score, referencing only the user's messages and the assistant's replies. 
-        End with a final statement.
+        Then explain the reason for the current productivity score, referencing only the messages that were sent. 
+        End with a final statement encouraging improvement.
       `,
     };
-
-    const conversationExcludingOriginalSystem = convoHistory.filter(
-      (msg) => msg.role !== "system"
-    );
 
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       temperature: 0,
-      messages: [summarySystemMessage, ...conversationExcludingOriginalSystem],
+      messages: [summarySystemMessage, ...convoHistory],
     });
 
     const summary = response.choices?.[0]?.message?.content;
-    if (!summary) {
-      return res.status(500).json({ error: "No summary from OpenAI." });
-    }
-
     res.json({ summary });
   } catch (error) {
     console.error("Error generating summary:", error);
@@ -335,9 +326,9 @@ app.post("/api/summary", async (req, res) => {
 });
 
 // ------------------------------
-//  Start the server
+//  Server Start
 // ------------------------------
-const PORT = 3005;
+const PORT = process.env.PORT || 3005;
 app.listen(PORT, () => {
-  console.log(`RageBot server is running on port ${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });

@@ -58,5 +58,125 @@
         "summary": "There is not enough context to provide a summary of the conversation."
       }
     ]
+  },
+  {
+    "id": "1742100973372",
+    "email": "valid@gmail.com",
+    "passwordHash": "$2b$10$U6ASzWykwusLmFyy.F5YPuipyslXB.HXW/hzp2jpfQ1/dTzi7Ai/m",
+    "chatHistory": [
+      {
+        "timestamp": 1742101006426,
+        "averageScore": 85,
+        "messages": [
+          {
+            "text": "i learnt about how nuclear fission worked today",
+            "side": "right"
+          },
+          {
+            "text": "That's great progress! Keep pushing yourself to learn more about complex topics like nuclear fission to expand your knowledge base and understanding of the world. Get ready for some nuclear reactions of productivity!",
+            "side": "left"
+          }
+        ],
+        "summary": "Summary: The individual learned about how nuclear fission works.\n\nFinal: Keep exploring and expanding your knowledge on this fascinating topic!"
+      }
+    ]
+  },
+  {
+    "id": "1742101478718",
+    "email": "a@gmail.com",
+    "passwordHash": "$2b$10$2xccjn3etyei5H229af8iOuYCaDFfQOsApO0I5.q6lJSoBAYmknwa",
+    "chatHistory": [
+      {
+        "timestamp": 1742101494429,
+        "averageScore": 85,
+        "messages": [
+          {
+            "text": "i leanr thow to ride a bike today and drive a car",
+            "side": "right"
+          },
+          {
+            "text": "Congratulations on learning how to ride a bike and drive a car in one day! Are you sure you weren't secretly a stuntman in your past life? Just don't go trying to combine those two skills at the same time, please! Stay safe out there and keep challenging yourself.",
+            "side": "left"
+          }
+        ],
+        "summary": "Summary: The person learned how to ride a bike and drive a car in one day.\n\nFinal: It's impressive to learn two new skills in one day, but safety should always come first."
+      },
+      {
+        "timestamp": 1742101511115,
+        "averageScore": 87.5,
+        "messages": [
+          {
+            "text": "i leanr thow to ride a bike today and drive a car",
+            "side": "right"
+          },
+          {
+            "text": "Congratulations on learning how to ride a bike and drive a car in one day! Are you sure you weren't secretly a stuntman in your past life? Just don't go trying to combine those two skills at the same time, please! Stay safe out there and keep challenging yourself.",
+            "side": "left"
+          },
+          {
+            "text": "i learnt the theory of relativity",
+            "side": "right"
+          },
+          {
+            "text": "Wow, learning the theory of relativity is quite impressive! I guess you're ready to become the next Einstein, huh? Keep expanding your knowledge and reach for the stars!",
+            "side": "left"
+          }
+        ],
+        "summary": "There is not enough context to provide a summary."
+      },
+      {
+        "timestamp": 1742101569619,
+        "averageScore": 81.67,
+        "messages": [
+          {
+            "text": "hello i did leetcode today",
+            "side": "right"
+          },
+          {
+            "text": "Doing LeetCode is a fantastic way to sharpen your coding skills! Just remember, consistency is key if you want to master those algorithms and data structures. Keep pushing yourself to tackle more challenges and you'll see significant improvement.",
+            "side": "left"
+          }
+        ],
+        "summary": "The individual mentioned that they did LeetCode today, indicating that they likely engaged in coding practice or problem-solving exercises on the platform. It's a positive step towards improving their programming skills."
+      },
+      {
+        "timestamp": 1742101606612,
+        "averageScore": 40,
+        "messages": [
+          {
+            "text": "i did leetcode today",
+            "side": "right"
+          },
+          {
+            "text": "Oh, congratulations on doing some LeetCode today, but let's be real - solving a single problem doesn't mean much in the grand scheme of your growth and progress.",
+            "side": "left"
+          }
+        ],
+        "summary": "There is not enough context to provide a detailed summary of the conversation."
+      },
+      {
+        "timestamp": 1742101622523,
+        "averageScore": 55,
+        "messages": [
+          {
+            "text": "i did leetcode today",
+            "side": "right"
+          },
+          {
+            "text": "Oh, congratulations on doing some LeetCode today, but let's be real - solving a single problem doesn't mean much in the grand scheme of your growth and progress.",
+            "side": "left"
+          },
+          {
+            "text": "i leanrnt how to ride a bike today",
+            "side": "right"
+          },
+          {
+            "text": "That's fantastic progress learning to ride a bike today, but don't forget to keep practicing consistently to truly master it!",
+            "side": "left"
+          }
+        ],
+        "summary": "There is not enough context to provide a detailed summary of the conversation."
+      }
+    ]
   }
 ]
