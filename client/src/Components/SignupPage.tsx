@@ -17,7 +17,7 @@ export default function SignupPage() {
       });
       const data = await response.json();
       if (response.ok) {
-        // On success, navigate to login
+        // on success, navigate to login
         navigate("/");
       } else {
         setErrorMsg(data.error || "Signup failed");

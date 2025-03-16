@@ -9,30 +9,25 @@ body,
   overflow: hidden;
 }
 
-/* For the image-based button, center contents and let the existing .header-button 
-   padding define the button's size. */
 .header-button.image-button {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Let the image fill the available space, but not inflate the button. */
 .score-emoji {
   max-width: 50%;
   max-height: 50%;
   object-fit: contain;
 }
 
-/* Override styles for the image-based button only */
 .header-button.image-button {
   background: none !important;
   border: none !important;
   box-shadow: none !important;
-  padding: 0; /* optional, if you want no padding at all */
+  padding: 0;
 }
 
-/* Also override hover/active states for the image-button */
 .header-button.image-button:hover {
   background: none !important;
   box-shadow: none !important;
@@ -67,7 +62,6 @@ body,
   flex-direction: column;
 }
 
-/* --- HEADER (Raised) --- */
 .header-container {
   display: flex;
   align-items: center;
