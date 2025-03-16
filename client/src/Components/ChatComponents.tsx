@@ -9,88 +9,18 @@ export type ChatMessage = {
   side: "left" | "right";
 };
 
+export type HistorySession = {
+  timestamp: number; // date/time of chat
+  averageScore: number; // final average score for that session
+  messages: ChatMessage[]; // entire conversation
+  summary?: string; // AI-generated summary
+};
+
+/** MESSAGE BUBBLE **/
 type MessageBubbleProps = {
   text: string;
   side?: "left" | "right";
 };
-
-/** HEADER COMPONENT **/
-export const Header: React.FC<{
-  setDifficulty: (diff: string) => void;
-  currentDifficulty: string;
-  averageScore: string;
-  onEmojiClick: () => void;
-  onHistoryClick: () => void;
-  onLogout: () => void;
-}> = ({
-  setDifficulty,
-  currentDifficulty,
-  averageScore,
-  onEmojiClick,
-  onHistoryClick,
-  onLogout,
-}) => {
-  // Determine which image to show based on averageScore
-  const score = parseFloat(averageScore) || 0;
-  let emojiImage = "";
-  if (score >= 0 && score <= 20) {
-    emojiImage = "/1.png";
-  } else if (score >= 21 && score <= 40) {
-    emojiImage = "/2.png";
-  } else if (score >= 41 && score <= 60) {
-    emojiImage = "/3.png";
-  } else if (score >= 61 && score <= 80) {
-    emojiImage = "/4.png";
-  } else if (score >= 81 && score <= 100) {
-    emojiImage = "/5.png";
-  }
-
-  return (
-    <div className="header-container">
-      <div className="counter-display">{averageScore}/100</div>
-      <button
-        className="header-button"
-        onClick={() => setDifficulty("easy")}
-        style={{ fontWeight: currentDifficulty === "easy" ? "bold" : "normal" }}
-      >
-        Easy
-      </button>
-      <button
-        className="header-button"
-        onClick={() => setDifficulty("medium")}
-        style={{
-          fontWeight: currentDifficulty === "medium" ? "bold" : "normal",
-        }}
-      >
-        Medium
-      </button>
-      <button
-        className="header-button"
-        onClick={() => setDifficulty("hard")}
-        style={{ fontWeight: currentDifficulty === "hard" ? "bold" : "normal" }}
-      >
-        Hard
-      </button>
-      {/* Image acting as emoji button */}
-      <div
-        className="header-button image-button"
-        onClick={onEmojiClick}
-        style={{ cursor: "pointer" }}
-      >
-        <img src={emojiImage} alt="Score Emoji" className="score-emoji" />
-      </div>
-      <button className="header-button">Week</button>
-      <button className="header-button" onClick={onHistoryClick}>
-        ⭐
-      </button>
-      <button className="header-button" onClick={onLogout}>
-        Logout
-      </button>
-    </div>
-  );
-};
-
-/** MESSAGE BUBBLE **/
 export const MessageBubble: React.FC<MessageBubbleProps> = ({
   text,
   side = "left",
@@ -116,7 +46,6 @@ export const MessageList: React.FC<{ messages: ChatMessage[] }> = ({
 type ChatInputProps = {
   onSend: (message: string) => void;
 };
-
 export const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
   const [inputValue, setInputValue] = useState("");
 
@@ -176,13 +105,6 @@ Your current productivity score is ${averageScore}/100.`;
 };
 
 /** HISTORY POPUP **/
-type HistorySession = {
-  timestamp: number; // date/time of chat
-  averageScore: number; // final average score for that session
-  messages: ChatMessage[]; // entire conversation
-  summary?: string; // AI-generated summary
-};
-
 const HistoryPopup: React.FC<{
   chatHistory: HistorySession[];
   onClose: () => void;
@@ -225,6 +147,143 @@ const HistoryPopup: React.FC<{
   );
 };
 
+/** WEEK POPUP (hardcoded table, only Sunday shows last session) **/
+const WeekPopup: React.FC<{
+  chatHistory: HistorySession[];
+  onClose: () => void;
+}> = ({ chatHistory, onClose }) => {
+  // If there's at least one session, get the last one:
+  const lastSession =
+    chatHistory.length > 0 ? chatHistory[chatHistory.length - 1] : null;
+
+  const sundaySummary = lastSession?.summary || "No summary";
+  const sundayScore = lastSession
+    ? lastSession.averageScore.toFixed(2)
+    : "0.00";
+
+  return (
+    <div className="summary-popup-overlay">
+      <div className="summary-popup">
+        <h2>Weekly Summary</h2>
+        <table style={{ margin: "0 auto", borderCollapse: "collapse" }}>
+          <thead>
+            <tr>
+              <th>Monday</th>
+              <th>Tuesday</th>
+              <th>Wednesday</th>
+              <th>Thursday</th>
+              <th>Friday</th>
+              <th>Saturday</th>
+              <th>Sunday</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {/* Monday–Saturday blank */}
+              <td style={{ border: "1px solid #ccc", padding: "8px" }}></td>
+              <td style={{ border: "1px solid #ccc", padding: "8px" }}></td>
+              <td style={{ border: "1px solid #ccc", padding: "8px" }}></td>
+              <td style={{ border: "1px solid #ccc", padding: "8px" }}></td>
+              <td style={{ border: "1px solid #ccc", padding: "8px" }}></td>
+              <td style={{ border: "1px solid #ccc", padding: "8px" }}></td>
+              {/* Sunday */}
+              <td style={{ border: "1px solid #ccc", padding: "8px" }}>
+                <strong>Summary:</strong> {sundaySummary}
+                <br />
+                <strong>Avg score:</strong> {sundayScore}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <button onClick={onClose}>Close</button>
+      </div>
+    </div>
+  );
+};
+
+/** HEADER COMPONENT **/
+export const Header: React.FC<{
+  setDifficulty: (diff: string) => void;
+  currentDifficulty: string;
+  averageScore: string;
+  onEmojiClick: () => void;
+  onHistoryClick: () => void;
+  onWeekClick: () => void; // <-- add onWeekClick prop
+  onLogout: () => void;
+}> = ({
+  setDifficulty,
+  currentDifficulty,
+  averageScore,
+  onEmojiClick,
+  onHistoryClick,
+  onWeekClick,
+  onLogout,
+}) => {
+  // Determine which image to show based on averageScore
+  const score = parseFloat(averageScore) || 0;
+  let emojiImage = "";
+  if (score >= 0 && score <= 20) {
+    emojiImage = "/1.png";
+  } else if (score >= 21 && score <= 40) {
+    emojiImage = "/2.png";
+  } else if (score >= 41 && score <= 60) {
+    emojiImage = "/3.png";
+  } else if (score >= 61 && score <= 80) {
+    emojiImage = "/4.png";
+  } else if (score >= 81 && score <= 100) {
+    emojiImage = "/5.png";
+  }
+
+  return (
+    <div className="header-container">
+      <div className="counter-display">{averageScore}/100</div>
+      <button
+        className="header-button"
+        onClick={() => setDifficulty("easy")}
+        style={{ fontWeight: currentDifficulty === "easy" ? "bold" : "normal" }}
+      >
+        Easy
+      </button>
+      <button
+        className="header-button"
+        onClick={() => setDifficulty("medium")}
+        style={{
+          fontWeight: currentDifficulty === "medium" ? "bold" : "normal",
+        }}
+      >
+        Medium
+      </button>
+      <button
+        className="header-button"
+        onClick={() => setDifficulty("hard")}
+        style={{
+          fontWeight: currentDifficulty === "hard" ? "bold" : "normal",
+        }}
+      >
+        Hard
+      </button>
+      {/* Image acting as emoji button */}
+      <div
+        className="header-button image-button"
+        onClick={onEmojiClick}
+        style={{ cursor: "pointer" }}
+      >
+        <img src={emojiImage} alt="Score Emoji" className="score-emoji" />
+      </div>
+      {/* Week button triggers onWeekClick */}
+      <button className="header-button" onClick={onWeekClick}>
+        Week
+      </button>
+      <button className="header-button" onClick={onHistoryClick}>
+        ⭐
+      </button>
+      <button className="header-button" onClick={onLogout}>
+        Logout
+      </button>
+    </div>
+  );
+};
+
 /** MAIN CHAT UI **/
 const ChatUI: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -237,9 +296,12 @@ const ChatUI: React.FC = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [chatHistory, setChatHistory] = useState<HistorySession[]>([]);
 
+  // NEW: Week popup
+  const [showWeek, setShowWeek] = useState(false);
+
   const navigate = useNavigate();
 
-  // Redirect to login if not authenticated
+  // If not authenticated, redirect to login
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -383,6 +445,12 @@ const ChatUI: React.FC = () => {
     setShowHistory(true);
   };
 
+  // Handle the new "Week" button
+  const handleWeekClick = async () => {
+    await fetchChatHistory(); // ensure chatHistory is up to date
+    setShowWeek(true);
+  };
+
   return (
     <div className="chat-wrapper">
       <Header
@@ -391,6 +459,7 @@ const ChatUI: React.FC = () => {
         averageScore={averageScore}
         onEmojiClick={handleEmojiClick}
         onHistoryClick={handleHistoryClick}
+        onWeekClick={handleWeekClick} // pass the function here
         onLogout={handleLogout}
       />
 
@@ -412,6 +481,14 @@ const ChatUI: React.FC = () => {
         <HistoryPopup
           chatHistory={chatHistory}
           onClose={() => setShowHistory(false)}
+        />
+      )}
+
+      {/* Week popup */}
+      {showWeek && (
+        <WeekPopup
+          chatHistory={chatHistory}
+          onClose={() => setShowWeek(false)}
         />
       )}
     </div>
