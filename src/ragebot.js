@@ -117,8 +117,47 @@ app.post("/api/ragebot", async (req, res) => {
   }
 });
 
+app.post("/api/summary", async (req, res) => {
+  try {
+    // Request for a strict summary of the conversation, and nothing else
+    const summarySystemMessage = {
+      role: "system",
+      content: `
+          You are a summarizer. Summarize the conversation so far strictly based on the content of the conversation. 
+          Do not add or make up any details not explicitly mentioned in the conversation. 
+          If something is unclear or not stated, say there is not enough context. 
+          Then explain the reason for the current productivity score, referencing only the user's messages and the assistant's replies. 
+          End with a final statement.`,
+    };
+
+    // this filters out the "You are a helpful assistant..." system message
+    const conversationExcludingOriginalSystem = convoHistory.filter(
+      (msg) => msg.role !== "system"
+    );
+
+    // call OpenAI with temperature=0 to reduce “creative” guesses
+    // this should fix it not making any bold / made up guesses
+    // of what the user did
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      temperature: 0, // helps reduce hallucination
+      messages: [summarySystemMessage, ...conversationExcludingOriginalSystem],
+    });
+
+    const summary = response.choices?.[0]?.message?.content;
+    if (!summary) {
+      return res.status(500).json({ error: "No summary from OpenAI." });
+    }
+
+    res.json({ summary });
+  } catch (error) {
+    console.error("Error generating summary:", error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+});
+
 // 6) Start the server
-const PORT = 3001;
+const PORT = 3005;
 app.listen(PORT, () => {
   console.log(`RageBot server is running on port ${PORT}`);
 });

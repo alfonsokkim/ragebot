@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import "./ChatComponents.css";
 
-// Header to let the user change the difficulty
+// Updated Header accepts an onEmojiClick prop.
 export const Header: React.FC<{
   setDifficulty: (diff: string) => void;
   currentDifficulty: string;
-}> = ({ setDifficulty, currentDifficulty }) => {
+  averageScore: string;
+  onEmojiClick: () => void;
+}> = ({ setDifficulty, currentDifficulty, averageScore, onEmojiClick }) => {
   return (
     <div className="header-container">
-      <div className="counter-display">875</div>
+      {/* Display the average score in the format n/100 */}
+      <div className="counter-display">{averageScore}/100</div>
       {/* Difficulty buttons */}
       <button
         className="header-button"
@@ -37,11 +40,13 @@ export const Header: React.FC<{
       >
         Hard
       </button>
-      {/* Other header buttons remain unchanged */}
+      {/* Emoji button which triggers the summary popup */}
+      <button className="header-button" onClick={onEmojiClick}>
+        😊
+      </button>
       <button className="header-button">Today</button>
       <button className="header-button">Week</button>
       <button className="header-button">Blah</button>
-      <button className="header-button">😊</button>
       <button className="header-button">⭐</button>
     </div>
   );
@@ -114,17 +119,45 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
   );
 };
 
+// The modal that displays a summary of the current chat and score
+const SummaryPopup: React.FC<{
+  messages: ChatMessage[];
+  averageScore: string;
+  aiSummary: string;
+  onClose: () => void;
+}> = ({ messages, averageScore, aiSummary, onClose }) => {
+  // A basic count summary.
+  const userCount = messages.filter((msg) => msg.side === "right").length;
+  const botCount = messages.filter((msg) => msg.side === "left").length;
+  const basicSummary = `You have sent ${userCount} messages and received ${botCount} responses.
+Your current productivity score is ${averageScore}/100.`;
+
+  return (
+    <div className="summary-popup-overlay">
+      <div className="summary-popup">
+        <h2>Chat Summary</h2>
+        <p>{basicSummary}</p>
+        <h3>AI Explanation</h3>
+        {aiSummary ? <p>{aiSummary}</p> : <p>Loading summary...</p>}
+        <button onClick={onClose}>Close</button>
+      </div>
+    </div>
+  );
+};
+
 const ChatUI: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [difficulty, setDifficulty] = useState("medium");
+  const [averageScore, setAverageScore] = useState("0.00");
+  const [showSummary, setShowSummary] = useState(false);
+  const [aiSummary, setAISummary] = useState("");
 
-  // send user's message to express server, then update message with the reply
   const handleSendMessage = async (userMessage: string) => {
-    // Add user message to chat
+    // append user's message to the chat
     setMessages((prev) => [...prev, { text: userMessage, side: "right" }]);
 
     try {
-      const response = await fetch("http://localhost:3001/api/ragebot", {
+      const response = await fetch("http://localhost:3005/api/ragebot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userMessage, difficulty }),
@@ -134,7 +167,7 @@ const ChatUI: React.FC = () => {
         setMessages((prev) => [...prev, { text: data.botReply, side: "left" }]);
       }
       if (data.averageScore) {
-        console.log("Current Average Score:", data.averageScore);
+        setAverageScore(data.averageScore);
       }
     } catch (error) {
       console.error("Error contacting RageBot:", error);
@@ -145,11 +178,49 @@ const ChatUI: React.FC = () => {
     }
   };
 
+  // fetch the AI summary from the server.
+  const fetchAISummary = async () => {
+    try {
+      const response = await fetch("http://localhost:3005/api/summary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await response.json();
+      if (data.summary) {
+        setAISummary(data.summary);
+      } else {
+        setAISummary("No summary available.");
+      }
+    } catch (error) {
+      console.error("Error fetching summary:", error);
+      setAISummary("Error fetching summary.");
+    }
+  };
+
+  // when emoji is clicked, fetch the summary and then show the popup.
+  const handleEmojiClick = async () => {
+    await fetchAISummary();
+    setShowSummary(true);
+  };
+
   return (
     <div className="chat-wrapper">
-      <Header setDifficulty={setDifficulty} currentDifficulty={difficulty} />
+      <Header
+        setDifficulty={setDifficulty}
+        currentDifficulty={difficulty}
+        averageScore={averageScore}
+        onEmojiClick={handleEmojiClick}
+      />
       <MessageList messages={messages} />
       <ChatInput onSend={handleSendMessage} />
+      {showSummary && (
+        <SummaryPopup
+          messages={messages}
+          averageScore={averageScore}
+          aiSummary={aiSummary}
+          onClose={() => setShowSummary(false)}
+        />
+      )}
     </div>
   );
 };
