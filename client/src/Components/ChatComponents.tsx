@@ -1,22 +1,19 @@
-// ChatComponents.tsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ChatComponents.css";
 
-/** TYPES & INTERFACES **/
 export type ChatMessage = {
   text: string;
   side: "left" | "right";
 };
 
 export type HistorySession = {
-  timestamp: number; // date/time of chat
-  averageScore: number; // final average score for that session
-  messages: ChatMessage[]; // entire conversation
-  summary?: string; // AI-generated summary
+  timestamp: number;
+  averageScore: number;
+  messages: ChatMessage[];
+  summary?: string;
 };
 
-/** MESSAGE BUBBLE **/
 type MessageBubbleProps = {
   text: string;
   side?: "left" | "right";
@@ -29,7 +26,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   return <div className={bubbleClass}>{text}</div>;
 };
 
-/** MESSAGE LIST **/
 export const MessageList: React.FC<{ messages: ChatMessage[] }> = ({
   messages,
 }) => {
@@ -42,7 +38,6 @@ export const MessageList: React.FC<{ messages: ChatMessage[] }> = ({
   );
 };
 
-/** CHAT INPUT **/
 type ChatInputProps = {
   onSend: (message: string) => void;
 };
@@ -57,7 +52,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === "enter") {
       handleSend();
     }
   };
@@ -67,19 +62,18 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
       <input
         className="text-input"
         type="text"
-        placeholder="Type something here..."
+        placeholder="type something here..."
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
       />
       <button className="send-button" onClick={handleSend}>
-        Send
+        send
       </button>
     </div>
   );
 };
 
-/** SUMMARY POPUP **/
 const SummaryPopup: React.FC<{
   messages: ChatMessage[];
   averageScore: string;
@@ -88,23 +82,22 @@ const SummaryPopup: React.FC<{
 }> = ({ messages, averageScore, aiSummary, onClose }) => {
   const userCount = messages.filter((m) => m.side === "right").length;
   const botCount = messages.filter((m) => m.side === "left").length;
-  const basicSummary = `You have sent ${userCount} messages and received ${botCount} responses.
-Your current productivity score is ${averageScore}/100.`;
+  const basicSummary = `you have sent ${userCount} messages and received ${botCount} responses.
+your current productivity score is ${averageScore}/100.`;
 
   return (
     <div className="summary-popup-overlay">
       <div className="summary-popup">
-        <h2>Chat Summary</h2>
+        <h2>chat summary</h2>
         <p>{basicSummary}</p>
-        <h3>AI Explanation</h3>
-        {aiSummary ? <p>{aiSummary}</p> : <p>Loading summary...</p>}
-        <button onClick={onClose}>Close</button>
+        <h3>ai explanation</h3>
+        {aiSummary ? <p>{aiSummary}</p> : <p>loading summary...</p>}
+        <button onClick={onClose}>close</button>
       </div>
     </div>
   );
 };
 
-/** HISTORY POPUP **/
 const HistoryPopup: React.FC<{
   chatHistory: HistorySession[];
   onClose: () => void;
@@ -112,9 +105,9 @@ const HistoryPopup: React.FC<{
   return (
     <div className="summary-popup-overlay">
       <div className="summary-popup">
-        <h2>Your Chat History</h2>
+        <h2>your chat history</h2>
         {chatHistory.length === 0 ? (
-          <p>No previous chats found.</p>
+          <p>no previous chats found.</p>
         ) : (
           chatHistory.map((session, idx) => {
             const dateStr = new Date(session.timestamp).toLocaleString();
@@ -128,35 +121,32 @@ const HistoryPopup: React.FC<{
                   textAlign: "left",
                 }}
               >
-                <strong>Date:</strong> {dateStr}
+                <strong>date:</strong> {dateStr}
                 <br />
-                <strong>Score:</strong> {(session.averageScore ?? 0).toFixed(2)}
+                <strong>score:</strong> {(session.averageScore ?? 0).toFixed(2)}
                 /100
                 <br />
-                <strong>Messages:</strong> {session.messages.length} total
+                <strong>messages:</strong> {session.messages.length} total
                 <br />
-                <strong>Summary:</strong>{" "}
-                {session.summary || "No summary available"}
+                <strong>summary:</strong>{" "}
+                {session.summary || "no summary available"}
               </div>
             );
           })
         )}
-        <button onClick={onClose}>Close</button>
+        <button onClick={onClose}>close</button>
       </div>
     </div>
   );
 };
 
-/** WEEK POPUP (hardcoded table, only Sunday shows last session) **/
 const WeekPopup: React.FC<{
   chatHistory: HistorySession[];
   onClose: () => void;
 }> = ({ chatHistory, onClose }) => {
-  // If there's at least one session, get the last one:
   const lastSession =
     chatHistory.length > 0 ? chatHistory[chatHistory.length - 1] : null;
-
-  const sundaySummary = lastSession?.summary || "No summary";
+  const sundaySummary = lastSession?.summary || "no summary";
   const sundayScore = lastSession
     ? lastSession.averageScore.toFixed(2)
     : "0.00";
@@ -164,51 +154,48 @@ const WeekPopup: React.FC<{
   return (
     <div className="summary-popup-overlay">
       <div className="summary-popup">
-        <h2>Weekly Summary</h2>
+        <h2>weekly summary</h2>
         <table style={{ margin: "0 auto", borderCollapse: "collapse" }}>
           <thead>
             <tr>
-              <th>Monday</th>
-              <th>Tuesday</th>
-              <th>Wednesday</th>
-              <th>Thursday</th>
-              <th>Friday</th>
-              <th>Saturday</th>
-              <th>Sunday</th>
+              <th>monday</th>
+              <th>tuesday</th>
+              <th>wednesday</th>
+              <th>thursday</th>
+              <th>friday</th>
+              <th>saturday</th>
+              <th>sunday</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              {/* Monday–Saturday blank */}
               <td style={{ border: "1px solid #ccc", padding: "8px" }}></td>
               <td style={{ border: "1px solid #ccc", padding: "8px" }}></td>
               <td style={{ border: "1px solid #ccc", padding: "8px" }}></td>
               <td style={{ border: "1px solid #ccc", padding: "8px" }}></td>
               <td style={{ border: "1px solid #ccc", padding: "8px" }}></td>
               <td style={{ border: "1px solid #ccc", padding: "8px" }}></td>
-              {/* Sunday */}
               <td style={{ border: "1px solid #ccc", padding: "8px" }}>
-                <strong>Summary:</strong> {sundaySummary}
+                <strong>summary:</strong> {sundaySummary}
                 <br />
-                <strong>Avg score:</strong> {sundayScore}
+                <strong>avg score:</strong> {sundayScore}
               </td>
             </tr>
           </tbody>
         </table>
-        <button onClick={onClose}>Close</button>
+        <button onClick={onClose}>close</button>
       </div>
     </div>
   );
 };
 
-/** HEADER COMPONENT **/
 export const Header: React.FC<{
   setDifficulty: (diff: string) => void;
   currentDifficulty: string;
   averageScore: string;
   onEmojiClick: () => void;
   onHistoryClick: () => void;
-  onWeekClick: () => void; // <-- add onWeekClick prop
+  onWeekClick: () => void;
   onLogout: () => void;
 }> = ({
   setDifficulty,
@@ -219,7 +206,6 @@ export const Header: React.FC<{
   onWeekClick,
   onLogout,
 }) => {
-  // Determine which image to show based on averageScore
   const score = parseFloat(averageScore) || 0;
   let emojiImage = "";
   if (score >= 0 && score <= 20) {
@@ -242,7 +228,7 @@ export const Header: React.FC<{
         onClick={() => setDifficulty("easy")}
         style={{ fontWeight: currentDifficulty === "easy" ? "bold" : "normal" }}
       >
-        Easy
+        easy
       </button>
       <button
         className="header-button"
@@ -251,7 +237,7 @@ export const Header: React.FC<{
           fontWeight: currentDifficulty === "medium" ? "bold" : "normal",
         }}
       >
-        Medium
+        medium
       </button>
       <button
         className="header-button"
@@ -260,48 +246,41 @@ export const Header: React.FC<{
           fontWeight: currentDifficulty === "hard" ? "bold" : "normal",
         }}
       >
-        Hard
+        hard
       </button>
-      {/* Image acting as emoji button */}
       <div
         className="header-button image-button"
         onClick={onEmojiClick}
         style={{ cursor: "pointer" }}
       >
-        <img src={emojiImage} alt="Score Emoji" className="score-emoji" />
+        <img src={emojiImage} alt="score emoji" className="score-emoji" />
       </div>
-      {/* Week button triggers onWeekClick */}
       <button className="header-button" onClick={onWeekClick}>
-        Week
+        week
       </button>
       <button className="header-button" onClick={onHistoryClick}>
         ⭐
       </button>
       <button className="header-button" onClick={onLogout}>
-        Logout
+        logout
       </button>
     </div>
   );
 };
 
-/** MAIN CHAT UI **/
 const ChatUI: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [difficulty, setDifficulty] = useState("medium");
   const [averageScore, setAverageScore] = useState("0.00");
-
-  // Summary & History popups
   const [showSummary, setShowSummary] = useState(false);
   const [aiSummary, setAISummary] = useState("");
   const [showHistory, setShowHistory] = useState(false);
   const [chatHistory, setChatHistory] = useState<HistorySession[]>([]);
-
-  // NEW: Week popup
   const [showWeek, setShowWeek] = useState(false);
 
   const navigate = useNavigate();
 
-  // If not authenticated, redirect to login
+  // if not authenticated, redirect to login
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -309,26 +288,26 @@ const ChatUI: React.FC = () => {
     }
   }, [navigate]);
 
-  // Logout
+  // logout
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");
   };
 
-  // Auto-save chat to server after each AI response
+  // auto-save chat to server after each ai response
   const autoSaveChat = async (
     updatedMessages: ChatMessage[],
     score: string
   ) => {
     try {
       const token = localStorage.getItem("token");
-      if (!token) return; // Not logged in
+      if (!token) return;
       const numericScore = parseFloat(score) || 0;
       const response = await fetch("http://localhost:3005/api/saveChat", {
-        method: "POST",
+        method: "post",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "content-type": "application/json",
+          authorization: `bearer ${token}`,
         },
         body: JSON.stringify({
           messages: updatedMessages,
@@ -336,16 +315,15 @@ const ChatUI: React.FC = () => {
         }),
       });
       if (!response.ok) {
-        console.error("Error auto-saving chat:", await response.text());
+        console.error("error auto-saving chat:", await response.text());
       }
     } catch (err) {
-      console.error("Error auto-saving chat:", err);
+      console.error("error auto-saving chat:", err);
     }
   };
 
-  // Send a message to RageBot
+  // send a message to ragebot
   const handleSendMessage = async (userMessage: string) => {
-    // Add user's message
     const newMessages = [
       ...messages,
       { text: userMessage, side: "right" as const },
@@ -355,16 +333,15 @@ const ChatUI: React.FC = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch("http://localhost:3005/api/ragebot", {
-        method: "POST",
+        method: "post",
         headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          "content-type": "application/json",
+          ...(token ? { authorization: `bearer ${token}` } : {}),
         },
         body: JSON.stringify({ userMessage, difficulty }),
       });
       const data = await response.json();
 
-      // Add bot's reply
       let updatedMessages = newMessages;
       if (data.botReply) {
         updatedMessages = [
@@ -374,42 +351,40 @@ const ChatUI: React.FC = () => {
         setMessages(updatedMessages);
       }
 
-      // Update average score
       if (data.averageScore) {
         setAverageScore(data.averageScore);
       }
 
-      // Auto-save after AI response
       autoSaveChat(updatedMessages, data.averageScore || "0.00");
     } catch (error) {
-      console.error("Error contacting RageBot:", error);
+      console.error("error contacting ragebot:", error);
       setMessages((prev) => [
         ...prev,
-        { text: "Error contacting RageBot", side: "left" as const },
+        { text: "error contacting ragebot", side: "left" as const },
       ]);
     }
   };
 
-  // Fetch AI summary (for the image popup)
+  // fetch ai summary for the image popup
   const fetchAISummary = async () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch("http://localhost:3005/api/summary", {
-        method: "POST",
+        method: "post",
         headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          "content-type": "application/json",
+          ...(token ? { authorization: `bearer ${token}` } : {}),
         },
       });
       const data = await response.json();
       if (data.summary) {
         setAISummary(data.summary);
       } else {
-        setAISummary("No summary available.");
+        setAISummary("no summary available.");
       }
     } catch (error) {
-      console.error("Error fetching summary:", error);
-      setAISummary("Error fetching summary.");
+      console.error("error fetching summary:", error);
+      setAISummary("error fetching summary.");
     }
   };
 
@@ -418,25 +393,25 @@ const ChatUI: React.FC = () => {
     setShowSummary(true);
   };
 
-  // Fetch user's entire chat history
+  // fetch user's entire chat history
   const fetchChatHistory = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
       const response = await fetch("http://localhost:3005/api/chatLogs", {
-        method: "GET",
+        method: "get",
         headers: {
-          Authorization: `Bearer ${token}`,
+          authorization: `bearer ${token}`,
         },
       });
       if (!response.ok) {
-        console.error("Error fetching chat logs:", await response.text());
+        console.error("error fetching chat logs:", await response.text());
         return;
       }
       const data = await response.json();
       setChatHistory(data.chatHistory || []);
     } catch (error) {
-      console.error("Error fetching chat logs:", error);
+      console.error("error fetching chat logs:", error);
     }
   };
 
@@ -445,9 +420,9 @@ const ChatUI: React.FC = () => {
     setShowHistory(true);
   };
 
-  // Handle the new "Week" button
+  // handle the new "week" button
   const handleWeekClick = async () => {
-    await fetchChatHistory(); // ensure chatHistory is up to date
+    await fetchChatHistory();
     setShowWeek(true);
   };
 
@@ -459,14 +434,13 @@ const ChatUI: React.FC = () => {
         averageScore={averageScore}
         onEmojiClick={handleEmojiClick}
         onHistoryClick={handleHistoryClick}
-        onWeekClick={handleWeekClick} // pass the function here
+        onWeekClick={handleWeekClick}
         onLogout={handleLogout}
       />
 
       <MessageList messages={messages} />
       <ChatInput onSend={handleSendMessage} />
 
-      {/* Summary popup */}
       {showSummary && (
         <SummaryPopup
           messages={messages}
@@ -476,7 +450,6 @@ const ChatUI: React.FC = () => {
         />
       )}
 
-      {/* History popup */}
       {showHistory && (
         <HistoryPopup
           chatHistory={chatHistory}
@@ -484,7 +457,6 @@ const ChatUI: React.FC = () => {
         />
       )}
 
-      {/* Week popup */}
       {showWeek && (
         <WeekPopup
           chatHistory={chatHistory}
