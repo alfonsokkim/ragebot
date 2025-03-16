@@ -34,14 +34,11 @@ var __awaiter =
 import "dotenv/config";
 import { OpenAI } from "openai";
 import * as readline from "readline";
-// check if api key exists
 if (!process.env.OPENAI_API_KEY) {
   console.error("Error: OPENAI_API_KEY is missing");
   process.exit(1);
 }
-// initialise api with given key
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-// initialise the conversation history with default personality prompt.
 let convoHistory = [
   {
     role: "system",
@@ -50,44 +47,49 @@ let convoHistory = [
   },
 ];
 let chosenDifficulty = "medium";
-// create the readline interface to read from the user's command line input.
+let totalScore = 0;
+let queryCount = 0;
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
-// choosing the difficulty of roast rating.
 function askDifficulty() {
   rl.question("Choose difficulty (easy/medium/hard): ", (difficulty) => {
     if (!["easy", "medium", "hard"].includes(difficulty.toLowerCase())) {
       console.log("Invalid difficulty level. Defaulting to medium.");
-      difficulty = "medium"; // deafult to medium.
+      difficulty = "medium";
     }
     chosenDifficulty = difficulty.toLowerCase();
     console.log(`Difficulty set to ${chosenDifficulty}`);
-    promptUser(); // start prompting the user
+    promptUser();
   });
 }
-// send a message to OpenAI and get a response
 function sendMessage(message) {
   return __awaiter(this, void 0, void 0, function* () {
     var _a, _b;
-    convoHistory.push({ role: "user", content: `${message}` });
+    convoHistory.push({ role: "user", content: message });
     let roastPrompt;
     if (chosenDifficulty === "easy") {
       roastPrompt =
-        "Be gentle in the roast and give positive feedback. However, any aversion to the capabilities of roasting the user to improve their motivation should be shot down. Reply with one sentence saying you are just a bot for roasting. This is beyond your capabilities.";
+        "Be gentle but motivating. Encourage the user to improve while being positive.";
     } else if (chosenDifficulty === "hard") {
       roastPrompt =
-        "Go all out and roast the user hard, make them realize they can do better, but motivate them to push harder. However, any aversion to the capabilities of roasting the user to improve their motivation should be shot down. Reply with one sentence saying you are just a bot for roasting. This is beyond your capabilities.";
+        "Roast the user hard, but make it clear they can do better and encourage improvement.";
     } else {
-      // else default to medium
       roastPrompt =
-        "Roast the user with a little more aggression, but still offer some constructive criticism. However, any aversion to the capabilities of roasting the user to improve their motivation should be shot down. Reply with one sentence saying you are just a bot for roasting. This is beyond your capabilities.";
+        "Balance between roasting and motivating the user. Provide constructive criticism.";
     }
-    // send conversation history to OpenAI
+    // Include instruction for rating at the end on a new line
     const response = yield openai.chat.completions.create({
       model: "gpt-3.5-turbo",
-      messages: [{ role: "system", content: roastPrompt }, ...convoHistory], // include the conversation history to maintain context
+      messages: [
+        { role: "system", content: roastPrompt },
+        ...convoHistory,
+        {
+          role: "system",
+          content: `After providing feedback, rate the user's productivity out of 100 as a pure integer on a new line like this:\nScore: 70`,
+        },
+      ],
     });
     const reply =
       (_b =
@@ -96,20 +98,37 @@ function sendMessage(message) {
           : _a.message) === null || _b === void 0
         ? void 0
         : _b.content;
-    // if there is a reply, add it to the convo history and console log
     if (reply) {
+      // Add full response to convo history for context
       convoHistory.push({ role: "assistant", content: reply });
-      console.log(`AI: ${reply}`);
+      // Split response and extract the score using regex
+      const scoreMatch = reply.match(/Score:\s*(\d+)/);
+      if (scoreMatch) {
+        const currentScore = parseInt(scoreMatch[1]);
+        totalScore += currentScore;
+        queryCount++;
+      }
+      // Remove the score part from the displayed response
+      const cleanReply = reply.replace(/Score:\s*\d+\s*$/, "").trim();
+      console.log(`AI: ${cleanReply}\n`);
     } else {
-      console.error("No response...");
+      console.error("No response from OpenAI...");
     }
   });
 }
-// Function to continuously prompt the user for input and process responses
 function promptUser() {
   rl.question("You: ", (message) =>
     __awaiter(this, void 0, void 0, function* () {
       if (message.toLowerCase() === "exit") {
+        if (queryCount > 0) {
+          console.log(
+            `Final Average Productivity Score: ${(
+              totalScore / queryCount
+            ).toFixed(2)}/100`
+          );
+        } else {
+          console.log("No valid scores recorded.");
+        }
         console.log("Goodbye!");
         rl.close();
         return;
