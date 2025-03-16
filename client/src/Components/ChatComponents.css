@@ -1,0 +1,195 @@
+/* --- Make page fill the browser --- */
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  /* background-color optional; you could do a different color
+     to contrast the 'window' in the center */
+  background-color: #fff;
+  overflow: hidden;
+}
+
+/* --- Outer container to center the "window" --- */
+.outer-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 15px;
+  overflow: hidden;
+  /* Slightly darker or different color behind the "window"
+     so edges are visible */
+  background-color: white;
+}
+
+/* --- The chat “window” wrapper --- */
+.chat-wrapper {
+  /* If you want a fixed size, do e.g. 600px x 500px. */
+  width: 97%;
+  height: 97%;
+  box-sizing: border-box;
+  background-color: #c0c0c0; /* Classic Win95 grey */
+
+  /* --- Win95-like 3D raised border effect: 
+     1) White border on top/left 
+     2) Grey or black shadow on bottom/right 
+  --- */
+  border: 3px solid grey; /* top/left highlight */
+  box-shadow: 2px 2px 0 #808080, /* bottom/right shadow line */ 3px 3px 0 #000; /* an extra black edge for deeper effect */
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- HEADER (Raised) --- */
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 5px;
+
+  /* A simpler approach: just a bottom border to separate from content. 
+     If you want it "inset," you can also do a box-shadow. */
+  border-top: 3px solid #808080;
+  border-left: 3px solid #808080;
+  border-right: 3px solid white;
+  border-bottom: 3px solid white;
+}
+
+/* Example of a digital counter style */
+.counter-display {
+  min-width: 50px;
+  text-align: center;
+  background-color: red;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: "Courier New", monospace;
+  font-size: 1.2rem;
+}
+
+.header-button {
+  /* Adjust padding for a bit more comfortable click/touch area */
+  padding: 8px 16px;
+
+  /* Use a subtle gradient for the background */
+  background: linear-gradient(to bottom, #f9f9f9 0%, #dcdcdc 100%);
+
+  /* Give it a slightly raised effect */
+  border: 2px solid #fff; /* top/left highlight */
+  border-left-color: #aaa; /* darker for top/left to enhance 3D */
+  border-top-color: #aaa;
+  border-right-color: #666; /* right/bottom shadow */
+  border-bottom-color: #666;
+
+  /* Slight rounding - optional for a smoother look */
+  border-radius: 4px;
+
+  /* Add a simple transition for hover/active animations */
+  transition: background 0.2s, box-shadow 0.2s;
+
+  /* Text styles */
+  color: #000;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: "Tahoma", sans-serif; /* Very Win95-esque font */
+}
+
+/* Hover state: darken the gradient slightly */
+.header-button:hover {
+  background: linear-gradient(to bottom, #f0f0f0 0%, #cfcfcf 100%);
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Active (pressed) state: invert the border to give a "pushed in" look */
+.header-button:active {
+  background: linear-gradient(to bottom, #cfcfcf 0%, #f0f0f0 100%);
+  border-top-color: #666; /* top/left becomes dark */
+  border-left-color: #666;
+  border-right-color: #aaa; /* right/bottom becomes lighter */
+  border-bottom-color: #aaa;
+
+  /* Inset shadow to further show it’s pressed */
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* --- MESSAGES AREA (Sunken) --- */
+.messages-container {
+  flex: 1;
+  background-color: #ddd;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  margin: 8px; /* Some breathing room inside the .chat-wrapper */
+
+  /* Sunken border: invert the highlight/shadow to push it in. */
+  border-top: 3px solid #808080;
+  border-left: 3px solid #808080;
+  border-right: 3px solid white;
+  border-bottom: 3px solid white;
+  box-shadow: inset 1px 1px 0 #fff,
+    /* highlight on top/left inside */ inset -1px -1px 0 #000; /* shadow on bottom/right inside */
+}
+
+/* --- Chat bubbles (just color them) --- */
+.left-bubble {
+  align-self: flex-start;
+  background-color: red;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 16px;
+  margin-bottom: 8px;
+  max-width: 60%;
+  font-size: 1.5rem;
+}
+
+.right-bubble {
+  align-self: flex-end;
+  background-color: blue;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 16px;
+  margin-bottom: 8px;
+  max-width: 60%;
+  font-size: 1.3rem;
+}
+
+/* --- INPUT AREA (Raised container, but sunken input) --- */
+.input-container {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: #c0c0c0;
+
+  /* top border for separation from messages area */
+  border-top: 2px solid #808080;
+}
+
+/* The text input itself (Sunken) */
+.text-input {
+  flex: 1;
+  font-size: 1rem;
+  padding: 8px;
+  margin-right: 8px;
+
+  /* 2px inset border to mimic old Windows text fields */
+  border: 2px inset #ccc;
+  border-radius: 2px;
+  outline: none;
+  box-shadow: none;
+}
+
+/* "Send" button (Raised) */
+.send-button {
+  padding: 8px 16px;
+  border: none;
+  background-color: #ddd;
+  cursor: pointer;
+  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #666;
+}
