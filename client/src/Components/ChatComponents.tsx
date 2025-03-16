@@ -30,6 +30,21 @@ export const Header: React.FC<{
   onHistoryClick,
   onLogout,
 }) => {
+  // Determine which image to show based on averageScore
+  const score = parseFloat(averageScore) || 0;
+  let emojiImage = "";
+  if (score >= 0 && score <= 20) {
+    emojiImage = "/1.png";
+  } else if (score >= 21 && score <= 40) {
+    emojiImage = "/2.png";
+  } else if (score >= 41 && score <= 60) {
+    emojiImage = "/3.png";
+  } else if (score >= 61 && score <= 80) {
+    emojiImage = "/4.png";
+  } else if (score >= 81 && score <= 100) {
+    emojiImage = "/5.png";
+  }
+
   return (
     <div className="header-container">
       <div className="counter-display">{averageScore}/100</div>
@@ -56,12 +71,15 @@ export const Header: React.FC<{
       >
         Hard
       </button>
-      <button className="header-button" onClick={onEmojiClick}>
-        😊
-      </button>
-      <button className="header-button">Today</button>
+      {/* Image acting as emoji button */}
+      <div
+        className="header-button image-button"
+        onClick={onEmojiClick}
+        style={{ cursor: "pointer" }}
+      >
+        <img src={emojiImage} alt="Score Emoji" className="score-emoji" />
+      </div>
       <button className="header-button">Week</button>
-      <button className="header-button">Blah</button>
       <button className="header-button" onClick={onHistoryClick}>
         ⭐
       </button>
@@ -221,7 +239,7 @@ const ChatUI: React.FC = () => {
 
   const navigate = useNavigate();
 
-  // If not authenticated, redirect to login
+  // Redirect to login if not authenticated
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -310,7 +328,7 @@ const ChatUI: React.FC = () => {
     }
   };
 
-  // Fetch AI summary (for the 😊 popup)
+  // Fetch AI summary (for the image popup)
   const fetchAISummary = async () => {
     try {
       const token = localStorage.getItem("token");
